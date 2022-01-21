@@ -1,3 +1,8 @@
+%global commit0 aef6790272fce5d64d36d191dcb79d97021bfda7
+%global date 20220104
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+#global tag %{version}
+
 %global	kmod_name evdi
 
 %global	debug_package %{nil}
@@ -5,28 +10,34 @@
 # Generate kernel symbols requirements:
 %global _use_internal_dependency_generator 0
 
-# If kversion isn't defined on the rpmbuild line, define it here. For Fedora,
-# kversion needs always to be defined as there is no kABI support.
-%{!?kversion: %global kversion 4.18.0-240.22.1.el8_3}
+%{!?kversion: %global kversion %(uname -r)}
 
 Name:           %{kmod_name}-kmod
-Version:        1.9.1
-Release:        1%{?dist}
+Version:        1.10.0
+Release:        1%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
-URL:            https://github.com/DisplayLink/evdi
+URL:            https://github.com/DisplayLink/%{kmod_name}
 
+%if 0%{?tag:1}
 Source0:        https://github.com/DisplayLink/%{kmod_name}/archive/v%{version}.tar.gz#/%{kmod_name}-%{version}.tar.gz
-Patch0:         https://github.com/DisplayLink/%{kmod_name}/commit/0f1ad2153de1bc144f2359afa91fbe3fa07e9e7a.patch
-Patch1:         el8.patch
+%else
+Source0:        https://github.com/DisplayLink/%{kmod_name}/archive/%{commit0}.tar.gz#/%{kmod_name}-%{shortcommit0}.tar.gz
+%endif
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  gcc
-BuildRequires:  kernel-devel %{?kversion:== %{kversion}}
-BuildRequires:  kernel-abi-whitelists %{?kversion:== %{kversion}}
+BuildRequires:  kernel-devel
 BuildRequires:  kmod
 BuildRequires:  redhat-rpm-config
+
+%if 0%{?rhel} == 7
+BuildRequires:  kernel-abi-whitelists
+%else
+BuildRequires:  kernel-abi-stablelists
+BuildRequires:  kernel-rpm-macros
+%endif
 
 %description
 This package provides the DisplayLink VGA/HDMI display kernel driver module.
@@ -67,7 +78,11 @@ if [ -x "/usr/sbin/weak-modules" ]; then
 fi
 
 %prep
+%if 0%{?tag:1}
 %autosetup -p1 -n %{kmod_name}-%{version}
+%else
+%autosetup -p1 -n %{kmod_name}-%{commit0}
+%endif
 
 echo "override %{kmod_name} * weak-updates/%{kmod_name}" > kmod-%{kmod_name}.conf
 
@@ -91,5 +106,8 @@ rm -f %{buildroot}/lib/modules/%{kversion}.%{_target_cpu}/modules.*
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Fri Jan 21 2022 Simone Caronni <negativo17@gmail.com> - 1:1.10.0-1.20220104gitaef6790
+- Update to 1.10.0 plus latest commits.
+
 * Tue Apr 13 2021 Simone Caronni <negativo17@gmail.com> - 1:1.9.1-1
 - First build.
