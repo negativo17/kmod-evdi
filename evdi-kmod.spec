@@ -87,6 +87,11 @@ fi
 echo "override %{kmod_name} * weak-updates/%{kmod_name}" > kmod-%{kmod_name}.conf
 
 %build
+%if 0%{?rhel} == 8
+# Also catches CentOS Stream
+export EL8FLAG="-DEL8"
+%endif
+
 make -C %{_usrsrc}/kernels/%{kversion}.%{_target_cpu} M=$PWD/module modules
 
 %install
