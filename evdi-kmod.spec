@@ -14,7 +14,7 @@
 
 Name:           %{kmod_name}-kmod
 Version:        1.11.0
-Release:        1%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
+Release:        2%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
@@ -25,6 +25,9 @@ Source0:        https://github.com/DisplayLink/%{kmod_name}/archive/v%{version}.
 %else
 Source0:        https://github.com/DisplayLink/%{kmod_name}/archive/%{commit0}.tar.gz#/%{kmod_name}-%{shortcommit0}.tar.gz
 %endif
+
+# https://github.com/DisplayLink/evdi/pull/364
+Patch0:         https://patch-diff.githubusercontent.com/raw/DisplayLink/evdi/pull/364.patch
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  gcc
@@ -111,6 +114,9 @@ rm -f %{buildroot}/lib/modules/%{kversion}.%{_target_cpu}/modules.*
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Thu Jun 16 2022 Simone Caronni <negativo17@gmail.com> - 1:1.11.0-2.20220428git39da217
+- Add patch for CentOS/RHEL 8.6.
+
 * Sat Apr 30 2022 Simone Caronni <negativo17@gmail.com> - 1:1.11.0-1.20220428git39da217
 - Update to 1.11.0 snapshot.
 
