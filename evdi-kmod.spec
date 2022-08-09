@@ -1,5 +1,5 @@
-%global commit0 39da217e1640f739a5fc4dbf799f79407e71a5f3
-%global date 20220428
+%global commit0 b884877267f11edaeb2a0f05201943e4252e22f2
+%global date 20220725
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global tag %{version}
 
@@ -13,21 +13,21 @@
 %{!?kversion: %global kversion %(uname -r)}
 
 Name:           %{kmod_name}-kmod
-Version:        1.11.0
-Release:        2%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
+Version:        1.12.0
+Release:        1%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
 URL:            https://github.com/DisplayLink/%{kmod_name}
 
 %if 0%{?tag:1}
-Source0:        https://github.com/DisplayLink/%{kmod_name}/archive/v%{version}.tar.gz#/%{kmod_name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}.tar.gz#/%{kmod_name}-%{version}.tar.gz
 %else
-Source0:        https://github.com/DisplayLink/%{kmod_name}/archive/%{commit0}.tar.gz#/%{kmod_name}-%{shortcommit0}.tar.gz
+Source0:        %{url}/archive/%{commit0}.tar.gz#/%{kmod_name}-%{shortcommit0}.tar.gz
 %endif
 
-# https://github.com/DisplayLink/evdi/pull/364
-Patch0:         https://patch-diff.githubusercontent.com/raw/DisplayLink/evdi/pull/364.patch
+Patch0:         https://patch-diff.githubusercontent.com/raw/DisplayLink/evdi/pull/371.patch
+Patch1:         https://patch-diff.githubusercontent.com/raw/DisplayLink/evdi/pull/372.patch
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  gcc
@@ -114,6 +114,9 @@ rm -f %{buildroot}/lib/modules/%{kversion}.%{_target_cpu}/modules.*
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Tue Aug 09 2022 Simone Caronni <negativo17@gmail.com> - 1:1.12.0-1.20220725gitb884877
+- Update to latest 1.12.0 snapshot.
+
 * Thu Jun 16 2022 Simone Caronni <negativo17@gmail.com> - 1:1.11.0-2.20220428git39da217
 - Add patch for CentOS/RHEL 8.6.
 
