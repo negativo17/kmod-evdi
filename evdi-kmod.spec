@@ -1,5 +1,5 @@
-%global commit0 b884877267f11edaeb2a0f05201943e4252e22f2
-%global date 20220725
+%global commit0 bdc258b25df4d00f222fde0e3c5003bf88ef17b5
+%global date 20221013
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global tag %{version}
 
@@ -14,7 +14,7 @@
 
 Name:           %{kmod_name}-kmod
 Version:        1.12.0
-Release:        1%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
+Release:        2%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
@@ -25,9 +25,6 @@ Source0:        %{url}/archive/v%{version}.tar.gz#/%{kmod_name}-%{version}.tar.g
 %else
 Source0:        %{url}/archive/%{commit0}.tar.gz#/%{kmod_name}-%{shortcommit0}.tar.gz
 %endif
-
-Patch0:         https://patch-diff.githubusercontent.com/raw/DisplayLink/evdi/pull/371.patch
-Patch1:         https://patch-diff.githubusercontent.com/raw/DisplayLink/evdi/pull/372.patch
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  gcc
@@ -114,6 +111,9 @@ rm -f %{buildroot}/lib/modules/%{kversion}.%{_target_cpu}/modules.*
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Thu Oct 13 2022 Simone Caronni <negativo17@gmail.com> - 1:1.12.0-2.20221013gitbdc258b
+- Update to latest snapshot.
+
 * Tue Aug 09 2022 Simone Caronni <negativo17@gmail.com> - 1:1.12.0-1.20220725gitb884877
 - Update to latest 1.12.0 snapshot.
 
