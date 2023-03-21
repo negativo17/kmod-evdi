@@ -26,6 +26,7 @@ Source0:        %{url}/archive/v%{version}.tar.gz#/%{kmod_name}-%{version}.tar.g
 Source0:        %{url}/archive/%{commit0}.tar.gz#/%{kmod_name}-%{shortcommit0}.tar.gz
 %endif
 
+# https://github.com/DisplayLink/evdi/pull/407
 Patch0:         evdi-el.patch
 
 BuildRequires:  elfutils-libelf-devel
