@@ -14,7 +14,7 @@
 
 Name:           %{kmod_name}-kmod
 Version:        1.13.1
-Release:        1%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
+Release:        2%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
@@ -114,6 +114,9 @@ rm -f %{buildroot}/lib/modules/%{kversion}.%{_target_cpu}/modules.*
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Wed May 10 2023 Simone Caronni <negativo17@gmail.com> - 1:1.13.1-2
+- Update EL patch.
+
 * Wed Mar 29 2023 Simone Caronni <negativo17@gmail.com> - 1:1.13.1-1
 - Update to 1.13.1.
 
