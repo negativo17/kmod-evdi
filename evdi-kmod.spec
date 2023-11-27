@@ -1,7 +1,7 @@
-%global commit0 64559211ec33390dbf4372e1029455ff58e0e739
-%global date 20230223
+%global commit0 a943d980743d07eb8e0e2d8915d8b692c03d4831
+%global date 20231123
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global tag %{version}
+#global tag %{version}
 
 %global	kmod_name evdi
 
@@ -14,7 +14,7 @@
 
 Name:           %{kmod_name}-kmod
 Version:        1.14.1
-Release:        2%{?dist}
+Release:        3%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
@@ -25,8 +25,6 @@ Source0:        %{url}/archive/v%{version}.tar.gz#/%{kmod_name}-%{version}.tar.g
 %else
 Source0:        %{url}/archive/%{commit0}.tar.gz#/%{kmod_name}-%{shortcommit0}.tar.gz
 %endif
-
-Patch0:         https://github.com/DisplayLink/evdi/commit/495e8cffbf62f6809108442999084213b014e9e0.patch
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  gcc
@@ -113,6 +111,9 @@ rm -f %{buildroot}/lib/modules/%{kversion}.%{_target_cpu}/modules.*
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Mon Nov 27 2023 Simone Caronni <negativo17@gmail.com> - 1:1.14.1-3.20231123gita943d98
+- Switch to snapshot which include build fixes for latest kernels.
+
 * Mon Nov 20 2023 Simone Caronni <negativo17@gmail.com> - 1:1.14.1-2
 - Add patch for 6.6 kernel.
 
