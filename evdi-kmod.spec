@@ -1,7 +1,7 @@
 %global commit0 d21a6ea3c69ba180457966a04b6545d321cf46ca
 %global date 20240130
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-#global tag %{version}
+%global tag %{version}
 
 %global	kmod_name evdi
 
@@ -13,8 +13,8 @@
 %{!?kversion: %global kversion %(uname -r)}
 
 Name:           %{kmod_name}-kmod
-Version:        1.14.1
-Release:        5%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
+Version:        1.14.2
+Release:        1%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
@@ -111,6 +111,9 @@ rm -f %{buildroot}/lib/modules/%{kversion}.%{_target_cpu}/modules.*
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Thu Feb 08 2024 Simone Caronni <negativo17@gmail.com> - 1:1.14.2-1
+- Update to final 1.14.2.
+
 * Tue Feb 06 2024 Simone Caronni <negativo17@gmail.com> - 1:1.14.1-5.20240130gitd21a6ea
 - Update to latest snapshot.
 
