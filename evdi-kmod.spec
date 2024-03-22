@@ -14,7 +14,7 @@
 
 Name:           %{kmod_name}-kmod
 Version:        1.14.2
-Release:        1%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
+Release:        2%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
@@ -47,29 +47,29 @@ the same variant of the Linux kernel and not on any one specific build.
 %package -n kmod-%{kmod_name}
 Summary:    %{kmod_name} kernel module(s)
 
-Provides:   kabi-modules = %{kversion}.%{_target_cpu}
+Provides:   kabi-modules = %{kversion}
 Provides:   %{kmod_name}-kmod = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:   module-init-tools
 
 %description -n kmod-%{kmod_name}
 This package provides the %{kmod_name} kernel module(s) built for the Linux kernel
-using the %{_target_cpu} family of processors.
+using the family of processors.
 
 %post -n kmod-%{kmod_name}
-if [ -e "/boot/System.map-%{kversion}.%{_target_cpu}" ]; then
-    /usr/sbin/depmod -aeF "/boot/System.map-%{kversion}.%{_target_cpu}" "%{kversion}.%{_target_cpu}" > /dev/null || :
+if [ -e "/boot/System.map-%{kversion}" ]; then
+    /usr/sbin/depmod -aeF "/boot/System.map-%{kversion}" "%{kversion}" > /dev/null || :
 fi
-modules=( $(find /lib/modules/%{kversion}.%{_target_cpu}/extra/%{kmod_name} | grep '\.ko$') )
+modules=( $(find /lib/modules/%{kversion}/extra/%{kmod_name} | grep '\.ko$') )
 if [ -x "/usr/sbin/weak-modules" ]; then
     printf '%s\n' "${modules[@]}" | /usr/sbin/weak-modules --add-modules
 fi
 
 %preun -n kmod-%{kmod_name}
-rpm -ql kmod-%{kmod_name}-%{version}-%{release}.%{_target_cpu} | grep '\.ko$' > /var/run/rpm-kmod-%{kmod_name}-modules
+rpm -ql kmod-%{kmod_name}-%{version}-%{release} | grep '\.ko$' > /var/run/rpm-kmod-%{kmod_name}-modules
 
 %postun -n kmod-%{kmod_name}
-if [ -e "/boot/System.map-%{kversion}.%{_target_cpu}" ]; then
-    /usr/sbin/depmod -aeF "/boot/System.map-%{kversion}.%{_target_cpu}" "%{kversion}.%{_target_cpu}" > /dev/null || :
+if [ -e "/boot/System.map-%{kversion}" ]; then
+    /usr/sbin/depmod -aeF "/boot/System.map-%{kversion}" "%{kversion}" > /dev/null || :
 fi
 modules=( $(cat /var/run/rpm-kmod-%{kmod_name}-modules) )
 rm /var/run/rpm-kmod-%{kmod_name}-modules
@@ -92,25 +92,28 @@ echo "override %{kmod_name} * weak-updates/%{kmod_name}" > kmod-%{kmod_name}.con
 export EL8FLAG="-DEL8"
 %endif
 
-make -C %{_usrsrc}/kernels/%{kversion}.%{_target_cpu} M=$PWD/module modules
+make -C %{_usrsrc}/kernels/%{kversion} M=$PWD/module modules
 
 %install
 export INSTALL_MOD_PATH=%{buildroot}
 export INSTALL_MOD_DIR=extra/%{kmod_name}
 
-make -C %{_usrsrc}/kernels/%{kversion}.%{_target_cpu} M=$PWD/module modules_install
+make -C %{_usrsrc}/kernels/%{kversion} M=$PWD/module modules_install
 
 
 install -d %{buildroot}%{_sysconfdir}/depmod.d/
 install kmod-%{kmod_name}.conf %{buildroot}%{_sysconfdir}/depmod.d/
 # Remove the unrequired files.
-rm -f %{buildroot}/lib/modules/%{kversion}.%{_target_cpu}/modules.*
+rm -f %{buildroot}/lib/modules/%{kversion}/modules.*
 
 %files -n kmod-%{kmod_name}
-/lib/modules/%{kversion}.%{_target_cpu}/extra/*
+/lib/modules/%{kversion}/extra/*
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Fri Mar 22 2024 Simone Caronni <negativo17@gmail.com> - 1:1.14.2-2
+- Sync uname -r with kversion passed from scripts.
+
 * Thu Feb 08 2024 Simone Caronni <negativo17@gmail.com> - 1:1.14.2-1
 - Update to final 1.14.2.
 
