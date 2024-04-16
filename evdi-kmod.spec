@@ -13,8 +13,8 @@
 %{!?kversion: %global kversion %(uname -r)}
 
 Name:           %{kmod_name}-kmod
-Version:        1.14.2
-Release:        2%{!?tag:.%{date}git%{shortcommit0}}%{?dist}
+Version:        1.14.4
+Release:        1%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
@@ -111,6 +111,9 @@ rm -f %{buildroot}/lib/modules/%{kversion}/modules.*
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Tue Apr 16 2024 Simone Caronni <negativo17@gmail.com> - 1:1.14.4-1
+- Update to 1.14.4.
+
 * Fri Mar 22 2024 Simone Caronni <negativo17@gmail.com> - 1:1.14.2-2
 - Sync uname -r with kversion passed from scripts.
 
