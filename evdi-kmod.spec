@@ -7,6 +7,17 @@
 
 %global	debug_package %{nil}
 
+%define __spec_install_post \
+  %{__arch_install_post}\
+  %{__os_install_post}\
+  %{__mod_compress_install_post}
+
+%define __mod_compress_install_post \
+  if [ $kernel_version ]; then \
+    find %{buildroot} -type f -name '*.ko' | xargs %{__strip} --strip-debug; \
+    find %{buildroot} -type f -name '*.ko' | xargs xz; \
+  fi
+
 # Generate kernel symbols requirements:
 %global _use_internal_dependency_generator 0
 
@@ -50,6 +61,33 @@ Requires:   module-init-tools
 This package provides the %{kmod_name} kernel module(s) built for the Linux
 kernel %{kversion}.
 
+%prep
+%if 0%{?tag:1}
+%autosetup -p1 -n %{kmod_name}-%{version}
+%else
+%autosetup -p1 -n %{kmod_name}-%{commit0}
+%endif
+
+echo "override %{kmod_name} * weak-updates/%{kmod_name}" > kmod-%{kmod_name}.conf
+
+%build
+# Catch any fork of RHEL
+%if 0%{?rhel}
+export EL%{?rhel}FLAG="-DEL%{?rhel}"
+%endif
+export DKMS_BUILD=1
+
+make -C %{_usrsrc}/kernels/%{kversion} M=$PWD/module modules
+find . -name "*.ko"
+
+%install
+install -p -m 0644 -D module/evdi.ko %{buildroot}%{_prefix}/lib/modules/%{kversion}/extra/evdi/evdi.ko
+
+install -d %{buildroot}%{_sysconfdir}/depmod.d/
+install kmod-%{kmod_name}.conf %{buildroot}%{_sysconfdir}/depmod.d/
+# Remove the unrequired files.
+rm -f %{buildroot}/lib/modules/%{kversion}/modules.*
+
 %post -n kmod-%{kmod_name}
 if [ -e "/boot/System.map-%{kversion}" ]; then
     /usr/sbin/depmod -aeF "/boot/System.map-%{kversion}" "%{kversion}" > /dev/null || :
@@ -60,7 +98,7 @@ if [ -x "/usr/sbin/weak-modules" ]; then
 fi
 
 %preun -n kmod-%{kmod_name}
-rpm -ql kmod-%{kmod_name}-%{version}-%{release} | grep '\.ko$' > /var/run/rpm-kmod-%{kmod_name}-modules
+rpm -ql kmod-%{kmod_name}-%{version}-%{release}.%{_target_cpu} | grep '\.ko$' > /var/run/rpm-kmod-%{kmod_name}-modules
 
 %postun -n kmod-%{kmod_name}
 if [ -e "/boot/System.map-%{kversion}" ]; then
@@ -72,37 +110,8 @@ if [ -x "/usr/sbin/weak-modules" ]; then
     printf '%s\n' "${modules[@]}" | /usr/sbin/weak-modules --remove-modules
 fi
 
-%prep
-%if 0%{?tag:1}
-%autosetup -p1 -n %{kmod_name}-%{version}
-%else
-%autosetup -p1 -n %{kmod_name}-%{commit0}
-%endif
-
-echo "override %{kmod_name} * weak-updates/%{kmod_name}" > kmod-%{kmod_name}.conf
-
-%build
-%if 0%{?rhel} == 8
-# Also catches CentOS Stream
-export EL8FLAG="-DEL8"
-%endif
-
-make -C %{_usrsrc}/kernels/%{kversion} M=$PWD/module modules
-
-%install
-export INSTALL_MOD_PATH=%{buildroot}
-export INSTALL_MOD_DIR=extra/%{kmod_name}
-
-make -C %{_usrsrc}/kernels/%{kversion} M=$PWD/module modules_install
-
-
-install -d %{buildroot}%{_sysconfdir}/depmod.d/
-install kmod-%{kmod_name}.conf %{buildroot}%{_sysconfdir}/depmod.d/
-# Remove the unrequired files.
-rm -f %{buildroot}/lib/modules/%{kversion}/modules.*
-
 %files -n kmod-%{kmod_name}
-/lib/modules/%{kversion}/extra/*
+%{_prefix}/lib/modules/%{kversion}/extra/*
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
