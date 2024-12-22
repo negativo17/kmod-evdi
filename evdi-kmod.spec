@@ -24,8 +24,8 @@
 %{!?kversion: %global kversion %(uname -r)}
 
 Name:           %{kmod_name}-kmod
-Version:        1.14.7%{!?tag:^%{date}git%{shortcommit0}}
-Release:        2%{?dist}
+Version:        1.14.8%{!?tag:^%{date}git%{shortcommit0}}
+Release:        1%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
@@ -36,10 +36,6 @@ Source0:        %{url}/archive/v%{version}.tar.gz#/%{kmod_name}-%{version}.tar.g
 %else
 Source0:        %{url}/archive/%{commit0}.tar.gz#/%{kmod_name}-%{shortcommit0}.tar.gz
 %endif
-
-Patch0:         https://patch-diff.githubusercontent.com/raw/DisplayLink/evdi/pull/498.patch
-Patch1:         https://raw.githubusercontent.com/displaylink-rpm/displaylink-rpm/refs/heads/master/align-with-linux-v6.11-plus.patch
-Patch2:         https://raw.githubusercontent.com/displaylink-rpm/displaylink-rpm/refs/heads/master/el9_5-build-fixes-and-el-audit-updates.patch
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  gcc
@@ -118,6 +114,9 @@ fi
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Sun Dec 22 2024 Simone Caronni <negativo17@gmail.com> - 1:1.14.8-1
+- Update to 1.14.8.
+
 * Fri Dec 06 2024 Simone Caronni <negativo17@gmail.com> - 1:1.14.7-2
 - Add kernel 6.12 patch and EL 9.5 patch.
 - Trim changelog.
