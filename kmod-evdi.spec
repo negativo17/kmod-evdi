@@ -23,9 +23,9 @@
 
 %{!?kversion: %global kversion %(uname -r)}
 
-Name:           %{kmod_name}-kmod
+Name:           kmod-%{kmod_name}
 Version:        1.14.8%{!?tag:^%{date}git%{shortcommit0}}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
@@ -45,19 +45,15 @@ BuildRequires:  kernel-rpm-macros
 BuildRequires:  kmod
 BuildRequires:  redhat-rpm-config
 
+Provides:   kabi-modules = %{kversion}
+Provides:   %{kmod_name}-kmod = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:   module-init-tools
+
 %description
 This package provides the DisplayLink VGA/HDMI display kernel driver module.
 It is built to depend upon the specific ABI provided by a range of releases of
 the same variant of the Linux kernel and not on any one specific build.
 
-%package -n kmod-%{kmod_name}
-Summary:    %{kmod_name} kernel module(s)
-
-Provides:   kabi-modules = %{kversion}
-Provides:   %{kmod_name}-kmod = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:   module-init-tools
-
-%description -n kmod-%{kmod_name}
 This package provides the %{kmod_name} kernel module(s) built for the Linux
 kernel %{kversion}.
 
@@ -87,33 +83,38 @@ install kmod-%{kmod_name}.conf %{buildroot}%{_sysconfdir}/depmod.d/
 # Remove the unrequired files.
 rm -f %{buildroot}/lib/modules/%{kversion}/modules.*
 
-%post -n kmod-%{kmod_name}
+%post
 if [ -e "/boot/System.map-%{kversion}" ]; then
-    /usr/sbin/depmod -aeF "/boot/System.map-%{kversion}" "%{kversion}" > /dev/null || :
+    %{_sbindir}/depmod -aeF "/boot/System.map-%{kversion}" "%{kversion}" > /dev/null || :
 fi
-modules=( $(find /lib/modules/%{kversion}/extra/%{kmod_name} | grep '\.ko$') )
-if [ -x "/usr/sbin/weak-modules" ]; then
-    printf '%s\n' "${modules[@]}" | /usr/sbin/weak-modules --add-modules
+modules=( $(find %{_prefix}/lib/modules/%{kversion}/extra/%{kmod_name} | grep '\.ko$') )
+if [ -x "%{_sbindir}/weak-modules" ]; then
+    printf '%s\n' "${modules[@]}" | %{_sbindir}/weak-modules --add-modules
 fi
 
-%preun -n kmod-%{kmod_name}
-rpm -ql kmod-%{kmod_name}-%{version}-%{release}.%{_target_cpu} | grep '\.ko$' > /var/run/rpm-kmod-%{kmod_name}-modules
+%preun
+rpm -ql kmod-%{kmod_name}-%{version}-%{release}.%{_target_cpu} | grep '\.ko$' > %{_var}/run/rpm-kmod-%{kmod_name}-modules
 
-%postun -n kmod-%{kmod_name}
+%postun
 if [ -e "/boot/System.map-%{kversion}" ]; then
-    /usr/sbin/depmod -aeF "/boot/System.map-%{kversion}" "%{kversion}" > /dev/null || :
+    %{_sbindir}/depmod -aeF "/boot/System.map-%{kversion}" "%{kversion}" > /dev/null || :
 fi
-modules=( $(cat /var/run/rpm-kmod-%{kmod_name}-modules) )
-rm /var/run/rpm-kmod-%{kmod_name}-modules
-if [ -x "/usr/sbin/weak-modules" ]; then
-    printf '%s\n' "${modules[@]}" | /usr/sbin/weak-modules --remove-modules
+modules=( $(cat %{_var}/run/rpm-kmod-%{kmod_name}-modules) )
+rm %{_var}/run/rpm-kmod-%{kmod_name}-modules
+if [ -x "%{_sbindir}/weak-modules" ]; then
+    printf '%s\n' "${modules[@]}" | %{_sbindir}/weak-modules --remove-modules
 fi
 
-%files -n kmod-%{kmod_name}
+%files
 %{_prefix}/lib/modules/%{kversion}/extra/*
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Wed Mar 12 2025 Simone Caronni <negativo17@gmail.com> - 1:1.14.8-2
+- Rename source package from nvidia-kmod to kmod-nvidia, the former is now used
+  for the akmods variant.
+- Use /usr/lib/modules for installing kernel modules and not /lib/modules.
+
 * Sun Dec 22 2024 Simone Caronni <negativo17@gmail.com> - 1:1.14.8-1
 - Update to 1.14.8.
 
