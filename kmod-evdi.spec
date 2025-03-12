@@ -13,10 +13,8 @@
   %{__mod_compress_install_post}
 
 %define __mod_compress_install_post \
-  if [ $kernel_version ]; then \
-    find %{buildroot} -type f -name '*.ko' | xargs %{__strip} --strip-debug; \
-    find %{buildroot} -type f -name '*.ko' | xargs xz; \
-  fi
+  find %{buildroot} -type f -name '*.ko' | xargs %{__strip} --strip-debug; \
+  find %{buildroot} -type f -name '*.ko' | xargs xz; \
 
 # Generate kernel symbols requirements:
 %global _use_internal_dependency_generator 0
