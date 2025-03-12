@@ -7,15 +7,6 @@
 
 %global	debug_package %{nil}
 
-%define __spec_install_post \
-  %{__arch_install_post}\
-  %{__os_install_post}\
-  %{__mod_compress_install_post}
-
-%define __mod_compress_install_post \
-  find %{buildroot} -type f -name '*.ko' | xargs %{__strip} --strip-debug; \
-  find %{buildroot} -type f -name '*.ko' | xargs xz; \
-
 # Generate kernel symbols requirements:
 %global _use_internal_dependency_generator 0
 
@@ -81,17 +72,21 @@ install kmod-%{kmod_name}.conf %{buildroot}%{_sysconfdir}/depmod.d/
 # Remove the unrequired files.
 rm -f %{buildroot}/lib/modules/%{kversion}/modules.*
 
+# Compress modules:
+find %{buildroot} -type f -name '*.ko' | xargs %{__strip} --strip-debug
+find %{buildroot} -type f -name '*.ko' | xargs xz
+
 %post
 if [ -e "/boot/System.map-%{kversion}" ]; then
     %{_sbindir}/depmod -aeF "/boot/System.map-%{kversion}" "%{kversion}" > /dev/null || :
 fi
-modules=( $(find %{_prefix}/lib/modules/%{kversion}/extra/%{kmod_name} | grep '\.ko$') )
+modules=( $(find %{_prefix}/lib/modules/%{kversion}/extra/%{kmod_name} | grep '\.ko.xz$') )
 if [ -x "%{_sbindir}/weak-modules" ]; then
     printf '%s\n' "${modules[@]}" | %{_sbindir}/weak-modules --add-modules
 fi
 
 %preun
-rpm -ql kmod-%{kmod_name}-%{version}-%{release}.%{_target_cpu} | grep '\.ko$' > %{_var}/run/rpm-kmod-%{kmod_name}-modules
+rpm -ql kmod-%{kmod_name}-%{version}-%{release}.%{_target_cpu} | grep '\.ko.xz$' > %{_var}/run/rpm-kmod-%{kmod_name}-modules
 
 %postun
 if [ -e "/boot/System.map-%{kversion}" ]; then
@@ -112,6 +107,7 @@ fi
 - Rename source package from nvidia-kmod to kmod-nvidia, the former is now used
   for the akmods variant.
 - Use /usr/lib/modules for installing kernel modules and not /lib/modules.
+- Drop compress macro and just add a step during install.
 
 * Sun Dec 22 2024 Simone Caronni <negativo17@gmail.com> - 1:1.14.8-1
 - Update to 1.14.8.
