@@ -13,8 +13,8 @@
 %{!?kversion: %global kversion %(uname -r)}
 
 Name:           kmod-%{kmod_name}
-Version:        1.14.8%{!?tag:^%{date}git%{shortcommit0}}
-Release:        2%{?dist}
+Version:        1.14.9%{!?tag:^%{date}git%{shortcommit0}}
+Release:        1%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
@@ -103,6 +103,9 @@ fi
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Thu Mar 27 2025 Simone Caronni <negativo17@gmail.com> - 1:1.14.9-1
+- Update to 1.14.9.
+
 * Wed Mar 12 2025 Simone Caronni <negativo17@gmail.com> - 1:1.14.8-2
 - Rename source package from nvidia-kmod to kmod-nvidia, the former is now used
   for the akmods variant.
