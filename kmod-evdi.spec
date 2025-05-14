@@ -1,10 +1,4 @@
-%global commit0 eab561a9fe19d1bbc801dd1ec60e8b3318941be7
-%global date 20240726
-%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global tag %{version}
-
 %global	kmod_name evdi
-
 %global	debug_package %{nil}
 
 # Generate kernel symbols requirements:
@@ -13,18 +7,14 @@
 %{!?kversion: %global kversion %(uname -r)}
 
 Name:           kmod-%{kmod_name}
-Version:        1.14.9%{!?tag:^%{date}git%{shortcommit0}}
+Version:        1.14.10
 Release:        1%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
 URL:            https://github.com/DisplayLink/%{kmod_name}
 
-%if 0%{?tag:1}
 Source0:        %{url}/archive/v%{version}.tar.gz#/%{kmod_name}-%{version}.tar.gz
-%else
-Source0:        %{url}/archive/%{commit0}.tar.gz#/%{kmod_name}-%{shortcommit0}.tar.gz
-%endif
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  gcc
@@ -47,11 +37,7 @@ This package provides the %{kmod_name} kernel module(s) built for the Linux
 kernel %{kversion}.
 
 %prep
-%if 0%{?tag:1}
 %autosetup -p1 -n %{kmod_name}-%{version}
-%else
-%autosetup -p1 -n %{kmod_name}-%{commit0}
-%endif
 
 echo "override %{kmod_name} * weak-updates/%{kmod_name}" > kmod-%{kmod_name}.conf
 
@@ -103,6 +89,9 @@ fi
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Wed May 14 2025 Simone Caronni <negativo17@gmail.com> - 1:1.14.10-1
+- Update to 1.14.10.
+
 * Thu Mar 27 2025 Simone Caronni <negativo17@gmail.com> - 1:1.14.9-1
 - Update to 1.14.9.
 
