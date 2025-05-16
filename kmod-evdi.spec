@@ -1,8 +1,7 @@
 %global	kmod_name evdi
 %global	debug_package %{nil}
 
-# Generate kernel symbols requirements:
-%global _use_internal_dependency_generator 0
+%global build_cflags "%optflags -fno-pic"
 
 %{!?kversion: %global kversion %(uname -r)}
 
@@ -15,6 +14,7 @@ License:        GPLv2
 URL:            https://github.com/DisplayLink/%{kmod_name}
 
 Source0:        %{url}/archive/v%{version}.tar.gz#/%{kmod_name}-%{version}.tar.gz
+Patch0:         https://github.com/DisplayLink/evdi/pull/517.patch
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  gcc
@@ -42,11 +42,6 @@ kernel %{kversion}.
 echo "override %{kmod_name} * weak-updates/%{kmod_name}" > kmod-%{kmod_name}.conf
 
 %build
-# Catch any fork of RHEL
-%if 0%{?rhel}
-export EL%{?rhel}FLAG="-DEL%{?rhel}"
-%endif
-
 make -C %{_usrsrc}/kernels/%{kversion} M=$PWD/module modules
 find . -name "*.ko"
 
