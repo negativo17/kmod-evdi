@@ -1,13 +1,14 @@
 %global	kmod_name evdi
 %global	debug_package %{nil}
 
-%global build_cflags "%optflags -fno-pic"
+# Build flags are inherited from the kernel
+%undefine _auto_set_build_flags
 
 %{!?kversion: %global kversion %(uname -r)}
 
 Name:           kmod-%{kmod_name}
 Version:        1.14.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        DisplayLink VGA/HDMI display driver kernel module
 Epoch:          1
 License:        GPLv2
@@ -85,6 +86,9 @@ fi
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Wed Jun 18 2025 Simone Caronni <negativo17@gmail.com> - 1:1.14.10-3
+- Do not set build flags.
+
 * Wed May 21 2025 Simone Caronni <negativo17@gmail.com> - 1:1.14.10-2
 - Add upstream patches.
 
