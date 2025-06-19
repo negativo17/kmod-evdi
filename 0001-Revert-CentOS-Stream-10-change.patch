@@ -1,0 +1,39 @@
+From 14802b1e206be01a90a050c09b2178f57a26a14f Mon Sep 17 00:00:00 2001
+From: Simone Caronni <negativo17@gmail.com>
+Date: Thu, 19 Jun 2025 10:38:48 +0200
+Subject: [PATCH] Revert CentOS Stream 10 change
+
+---
+ module/evdi_gem.c     | 2 +-
+ module/evdi_painter.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/module/evdi_gem.c b/module/evdi_gem.c
+index 34b4059..c23b833 100644
+--- a/module/evdi_gem.c
++++ b/module/evdi_gem.c
+@@ -29,7 +29,7 @@
+ #include <linux/vmalloc.h>
+ 
+ 
+-#if KERNEL_VERSION(6, 13, 0) <= LINUX_VERSION_CODE || defined(EL10)
++#if KERNEL_VERSION(6, 13, 0) <= LINUX_VERSION_CODE
+ MODULE_IMPORT_NS("DMA_BUF");
+ #elif KERNEL_VERSION(5, 16, 0) <= LINUX_VERSION_CODE || defined(EL9)
+ MODULE_IMPORT_NS(DMA_BUF);
+diff --git a/module/evdi_painter.c b/module/evdi_painter.c
+index 47e0acd..ced4f1c 100644
+--- a/module/evdi_painter.c
++++ b/module/evdi_painter.c
+@@ -36,7 +36,7 @@
+ #endif
+ 
+ /* Import of DMA_BUF namespace was reverted in EL8 */
+-#if KERNEL_VERSION(6, 13, 0) <= LINUX_VERSION_CODE || defined(EL10)
++#if KERNEL_VERSION(6, 13, 0) <= LINUX_VERSION_CODE
+ MODULE_IMPORT_NS("DMA_BUF");
+ #elif KERNEL_VERSION(5, 16, 0) <= LINUX_VERSION_CODE || defined(EL9)
+ MODULE_IMPORT_NS(DMA_BUF);
+-- 
+2.49.0
+
