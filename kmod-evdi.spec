@@ -15,8 +15,10 @@ License:        GPLv2
 URL:            https://github.com/DisplayLink/%{kmod_name}
 
 Source0:        %{url}/archive/v%{version}.tar.gz#/%{kmod_name}-%{version}.tar.gz
-# Required for CentOS Stream (10.1), not required for 10.0:
-Patch1:         0001-Revert-CentOS-Stream-10-change.patch
+Patch0:         https://github.com/DisplayLink/evdi/commit/149dbaea6ca49a20fa04636cf4a60ca5ee75b8a6.patch
+Patch1:         https://github.com/DisplayLink/evdi/commit/d00021b6a926b5ae14f45c95e908180422425b96.patch
+Patch2:         https://github.com/DisplayLink/evdi/commit/cc97fab0e2cfc7fba980f645b4901280018586db.patch
+Patch3:         https://github.com/DisplayLink/evdi/commit/9004c9ee6caeddc56b95cdaa82281e073035f251.patch
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  gcc
