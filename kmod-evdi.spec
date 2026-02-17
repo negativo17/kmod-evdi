@@ -6,15 +6,16 @@
 
 %{!?kversion: %global kversion %(uname -r)}
 
-Name:           kmod-%{kmod_name}
-Version:        1.14.14
-Release:        1%{?dist}
-Summary:        DisplayLink VGA/HDMI display driver kernel module
-Epoch:          1
-License:        GPLv2
-URL:            https://github.com/DisplayLink/%{kmod_name}
+Name:       kmod-%{kmod_name}
+Version:    1.14.14
+Release:    2%{?dist}
+Summary:    DisplayLink VGA/HDMI display driver kernel module
+Epoch:      1
+License:    GPLv2
+URL:        https://github.com/DisplayLink/%{kmod_name}
 
-Source0:        %{url}/archive/v%{version}.tar.gz#/%{kmod_name}-%{version}.tar.gz
+Source0:    %{url}/archive/v%{version}.tar.gz#/%{kmod_name}-%{version}.tar.gz
+Patch0:     https://github.com/DisplayLink/evdi/commit/c88fb924d4b1581d874f2786c9b62feef078a4e1.patch
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  gcc
@@ -84,6 +85,9 @@ fi
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Tue Feb 17 2026 Simone Caronni <negativo17@gmail.com> - 1:1.14.14-2
+- Fix build on aarch64.
+
 * Mon Feb 09 2026 Simone Caronni <negativo17@gmail.com> - 1:1.14.14-1
 - Update to 1.14.14.
 
