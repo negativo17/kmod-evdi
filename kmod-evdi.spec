@@ -7,8 +7,8 @@
 %{!?kversion: %global kversion %(uname -r)}
 
 Name:       kmod-%{kmod_name}
-Version:    1.14.14
-Release:    2%{?dist}
+Version:    1.14.15
+Release:    1%{?dist}
 Summary:    DisplayLink VGA/HDMI display driver kernel module
 Epoch:      1
 License:    GPLv2
@@ -85,6 +85,9 @@ fi
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Wed Feb 25 2026 Simone Caronni <negativo17@gmail.com> - 1:1.14.15-1
+- Update to 1.14.15.
+
 * Tue Feb 17 2026 Simone Caronni <negativo17@gmail.com> - 1:1.14.14-2
 - Fix build on aarch64.
 
