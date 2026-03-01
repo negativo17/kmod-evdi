@@ -15,7 +15,6 @@ License:    GPLv2
 URL:        https://github.com/DisplayLink/%{kmod_name}
 
 Source0:    %{url}/archive/v%{version}.tar.gz#/%{kmod_name}-%{version}.tar.gz
-Patch0:     https://github.com/DisplayLink/evdi/commit/c88fb924d4b1581d874f2786c9b62feef078a4e1.patch
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  gcc
