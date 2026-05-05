@@ -7,7 +7,7 @@
 %{!?kversion: %global kversion %(uname -r)}
 
 Name:       kmod-%{kmod_name}
-Version:    1.14.15
+Version:    1.14.16
 Release:    1%{?dist}
 Summary:    DisplayLink VGA/HDMI display driver kernel module
 Epoch:      1
@@ -84,6 +84,9 @@ fi
 %config /etc/depmod.d/kmod-%{kmod_name}.conf
 
 %changelog
+* Tue May 05 2026 Simone Caronni <negativo17@gmail.com> - 1:1.14.16-1
+- Update to 1.14.16.
+
 * Wed Feb 25 2026 Simone Caronni <negativo17@gmail.com> - 1:1.14.15-1
 - Update to 1.14.15.
 
